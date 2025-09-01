@@ -1,23 +1,26 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
-  title: User Profiles API
+  title: User Profile API
   version: 1.0.0
+servers:
+  - url: http://localhost:8000
 paths:
   /users/{id}:
     get:
-      summary: Retourne un utilisateur avec toutes ses informations
+      summary: Récupère un utilisateur avec toutes ses informations
       parameters:
         - $ref: '#/components/parameters/id'
       responses:
         '200':
-          description: Utilisateur trouvé
+          description: Profil utilisateur complet
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserProfile'
+
   /users:
     post:
-      summary: Crée une liste d’utilisateurs
+      summary: Crée une liste d’utilisateurs sans identifiant
       requestBody:
         required: true
         content:
@@ -28,16 +31,17 @@ paths:
                 $ref: '#/components/schemas/CreateUserProfile'
       responses:
         '201':
-          description: Liste des utilisateurs créés avec identifiants
+          description: Utilisateurs créés avec leurs identifiants
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserProfile'
+
   /users/{id}/personalInfo:
     put:
-      summary: Met à jour les informations personnelles
+      summary: Met à jour uniquement les informations personnelles
       parameters:
         - $ref: '#/components/parameters/id'
       requestBody:
@@ -49,9 +53,14 @@ paths:
       responses:
         '200':
           description: Informations personnelles mises à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+
   /users/{id}/address:
     put:
-      summary: Met à jour l’adresse
+      summary: Met à jour uniquement l’adresse
       parameters:
         - $ref: '#/components/parameters/id'
       requestBody:
@@ -63,9 +72,14 @@ paths:
       responses:
         '200':
           description: Adresse mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+
   /users/{id}/preferences:
     put:
-      summary: Met à jour les préférences
+      summary: Met à jour uniquement les préférences
       parameters:
         - $ref: '#/components/parameters/id'
       requestBody:
@@ -77,6 +91,11 @@ paths:
       responses:
         '200':
           description: Préférences mises à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+
 components:
   parameters:
     id:
@@ -85,50 +104,64 @@ components:
       required: true
       schema:
         type: string
+      example: "USR123"
   schemas:
     UserProfile:
       allOf:
-        - $ref: '#/components/schemas/PersonalInfo'
-        - $ref: '#/components/schemas/Address'
-        - $ref: '#/components/schemas/Preferences'
+        - $ref: '#/components/schemas/CreateUserProfile'
         - type: object
           properties:
             identifier:
               type: string
+              example: "USR123"
     CreateUserProfile:
-      allOf:
-        - $ref: '#/components/schemas/PersonalInfo'
-        - $ref: '#/components/schemas/Address'
-        - $ref: '#/components/schemas/Preferences'
+      type: object
+      properties:
+        personalInfo:
+          $ref: '#/components/schemas/PersonalInfo'
+        address:
+          $ref: '#/components/schemas/Address'
+        preferences:
+          $ref: '#/components/schemas/Preferences'
     PersonalInfo:
       type: object
       properties:
         first_name:
           type: string
+          example: Alice
         last_name:
           type: string
+          example: Martin
         birthdate:
           type: string
           format: date
+          example: 2000-01-01
         email:
           type: string
           format: email
+          example: alice@example.com
     Address:
       type: object
       properties:
         address_street:
           type: string
+          example: 10 Rue de l’Indépendance
         address_city:
           type: string
+          example: Antananarivo
         address_country:
           type: string
+          example: Madagascar
         address_postal_code:
-          type: string
+          type: integer
+          example: 101
     Preferences:
       type: object
       properties:
         needs_newsletter:
           type: boolean
+          example: true
         language:
           type: string
           enum: [mg, fr, eng]
+          example: fr

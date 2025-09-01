@@ -1,24 +1,27 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Users API
+  description: Users API
   version: 1.0.0
+servers:
+  - url: 'https'
 paths:
   /users:
     get:
-      summary: Liste les utilisateurs avec pagination
+      summary: Liste des utilisateurs
       parameters:
         - name: page
           in: query
           required: false
           schema:
             type: integer
-          example: 1
+            default: 1
         - name: size
           in: query
           required: false
           schema:
             type: integer
-          example: 20
+            default: 20
       responses:
         '200':
           description: Liste des utilisateurs retrouvés
@@ -31,19 +34,16 @@ paths:
                   properties:
                     id:
                       type: integer
+                      example: 1
                     name:
                       type: string
+                      example: Alice
                     email:
                       type: string
-              example:
-                - id: 1
-                  name: Alice
-                  email: alice@example.com
-                - id: 2
-                  name: Bob
-                  email: bob@example.com
+                      format: email
+                      example: alice@example.com
         '400':
-          description: Mauvais types de paramètres
+          description: Mauvais types de paramètres fournis
           content:
             application/json:
               schema:
@@ -51,5 +51,4 @@ paths:
                 properties:
                   error:
                     type: string
-              example:
-                error: "Bad types for provided query parameters"
+                    example: Bad types for provided query parameters
